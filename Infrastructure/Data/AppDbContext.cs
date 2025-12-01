@@ -22,6 +22,7 @@ namespace Ecommerce.Api.Infrastructure.Data
         public DbSet<OrderReview> OrderReviews { get; set; }
         public DbSet<Restaurant> Restaurants { get; set; }
         public DbSet<Store> Stores { get; set; }
+        public DbSet<OrderMessage> OrderMessages { get; set; }
 
         // Tickets
         public DbSet<Ticket> Tickets { get; set; }
