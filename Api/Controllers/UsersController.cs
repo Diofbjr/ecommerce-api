@@ -1,55 +1,61 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Ecommerce.Api.Application.Users.Services;
 using Ecommerce.Api.Application.Users.Dtos;
 
-[ApiController]
-[Route("api/users")]
-public class UsersController : ControllerBase
+namespace Ecommerce.Api.Api.Controllers
 {
-    private readonly IUserService _service;
-
-    public UsersController(IUserService service)
+    [ApiController]
+    [Route("api/users")]
+    [Authorize] // 🔥 Agora exige token JWT
+    public class UsersController : ControllerBase
     {
-        _service = service;
-    }
+        private readonly IUserService _service;
 
-    [HttpGet("profile")]
-    public async Task<IActionResult> GetProfile()
-    {
-        var userId = "fake-user-123";
-        var profile = await _service.GetProfile(userId);
-        return Ok(profile);
-    }
+        public UsersController(IUserService service)
+        {
+            _service = service;
+        }
 
-    [HttpPut("profile")]
-    public async Task<IActionResult> UpdateProfile(UpdateProfileRequest request)
-    {
-        var userId = "fake-user-123";
-        var updated = await _service.UpdateProfile(userId, request);
-        return Ok(updated);
-    }
+        // Extrai o ID do usuário a partir do JWT
+        private string GetUserId()
+        {
+            return User.FindFirst("sub")?.Value!;
+        }
 
-    [HttpPut("profile/phone")]
-    public async Task<IActionResult> UpdatePhone(UpdatePhoneRequest request)
-    {
-        var userId = "fake-user-123";
-        var ok = await _service.UpdatePhone(userId, request);
-        return ok ? Ok() : BadRequest();
-    }
+        [HttpGet("profile")]
+        public async Task<IActionResult> GetProfile()
+        {
+            var profile = await _service.GetProfile(GetUserId());
+            return Ok(profile);
+        }
 
-    [HttpPost("verify-phone")]
-    public async Task<IActionResult> VerifyPhone(VerifyPhoneRequest request)
-    {
-        var userId = "fake-user-123";
-        var ok = await _service.VerifyPhone(userId, request);
-        return ok ? Ok() : BadRequest();
-    }
+        [HttpPut("profile")]
+        public async Task<IActionResult> UpdateProfile([FromBody] UpdateProfileRequest request)
+        {
+            var updated = await _service.UpdateProfile(GetUserId(), request);
+            return Ok(updated);
+        }
 
-    [HttpDelete("account")]
-    public async Task<IActionResult> DeleteAccount(DeleteAccountRequest request)
-    {
-        var userId = "fake-user-123";
-        var ok = await _service.DeleteAccount(userId, request);
-        return ok ? Ok() : BadRequest();
+        [HttpPut("profile/phone")]
+        public async Task<IActionResult> UpdatePhone([FromBody] UpdatePhoneRequest request)
+        {
+            var ok = await _service.UpdatePhone(GetUserId(), request);
+            return ok ? Ok(new { message = "OTP enviado" }) : BadRequest();
+        }
+
+        [HttpPost("verify-phone")]
+        public async Task<IActionResult> VerifyPhone([FromBody] VerifyPhoneRequest request)
+        {
+            var ok = await _service.VerifyPhone(GetUserId(), request);
+            return ok ? Ok(new { message = "Telefone verificado" }) : BadRequest();
+        }
+
+        [HttpDelete("account")]
+        public async Task<IActionResult> DeleteAccount([FromBody] DeleteAccountRequest request)
+        {
+            var ok = await _service.DeleteAccount(GetUserId(), request);
+            return ok ? Ok(new { message = "Conta deletada" }) : BadRequest();
+        }
     }
 }

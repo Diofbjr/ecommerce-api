@@ -1,8 +1,8 @@
 public class AddressDto
 {
-    public string Id { get; set; }
-    public string Label { get; set; }
-    public string DeliveryAddress { get; set; }
+    public string Id { get; set; } = string.Empty;
+    public string Label { get; set; } = string.Empty;
+    public string DeliveryAddress { get; set; } = string.Empty;
     public string? Details { get; set; }
-    public string AddressType { get; set; }
+    public string AddressType { get; set; } = string.Empty;
 }
