@@ -11,6 +11,7 @@ namespace Ecommerce.Api.Infrastructure.Data
     {
         public AppDbContext(DbContextOptions options) : base(options) {}
 
+        // Addresses
         public DbSet<Address> Addresses { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<PhoneVerification> PhoneVerifications { get; set; }
@@ -30,5 +31,28 @@ namespace Ecommerce.Api.Infrastructure.Data
         public DbSet<RatingAspect> RatingAspects { get; set; }
         public DbSet<Review> Reviews { get; set; }
         public DbSet<ReviewAspectScore> ReviewAspectScores { get; set; }
+
+        // Refresh Tokens
+        public DbSet<RefreshToken> RefreshTokens { get; set; }
+
+        // ------------------------------------------------------
+        // MODEL BUILDER CONFIG
+        // ------------------------------------------------------
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            // 🔥 Relacionamento User 1:N RefreshTokens
+            modelBuilder.Entity<RefreshToken>()
+                .HasOne(rt => rt.User)
+                .WithMany(u => u.RefreshTokens)
+                .HasForeignKey(rt => rt.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // 🔥 Opcional: Email único
+            modelBuilder.Entity<User>()
+                .HasIndex(u => u.Email)
+                .IsUnique();
+        }
     }
 }

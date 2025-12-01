@@ -1,4 +1,5 @@
 using Ecommerce.Api.Application.Addresses.Services;
+using Ecommerce.Api.Application.Auth.Services;
 using Ecommerce.Api.Application.Users.Services;
 using Ecommerce.Api.Infrastructure.Data;
 using Ecommerce.Api.Infrastructure.Services;
@@ -14,6 +15,7 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IAddressService, AddressService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<ITicketService, TicketService>();
+builder.Services.AddScoped<ITokenService, JwtTokenService>();
 
 builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddValidatorsFromAssembly(typeof(Program).Assembly);
